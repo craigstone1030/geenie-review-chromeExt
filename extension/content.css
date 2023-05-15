@@ -1,0 +1,56 @@
+.intel-ant-drawer {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    pointer-events: none;
+}
+
+/* :where(.css-1fviqcj)[class^="ant-drawer"], :where(.css-1fviqcj)[class*=" ant-drawer"] {
+    font-family: -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans',sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Noto Color Emoji';
+    font-size: 14px;
+    box-sizing: border-box;
+} */
+
+.intel-ant-drawer-mask {
+    position: absolute;
+    inset: 0;
+    z-index: 1000;
+    background: rgba(0, 0, 0, 0.45);
+    pointer-events: auto;
+}
+
+.intel-ant-drawer-right>.intel-ant-drawer-content-wrapper {
+    top: 0;
+    right: 0;
+    bottom: 0;
+    box-shadow: -6px 0 16px 0 rgba(0, 0, 0, 0.08), -3px 0 6px -4px rgba(0, 0, 0, 0.12), -9px 0 28px 8px rgba(0, 0, 0, 0.05);
+}
+
+.intel-ant-drawer .intel-ant-drawer-content {
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background: #1D1C27;
+    pointer-events: auto;
+}
+
+.intel-ant-drawer .intel-ant-drawer-content-wrapper {
+    position: absolute;
+    z-index: 1000;
+    transition: all 0.3s; 
+}
+
+/* [class^="ant-drawer"] [class^="ant-drawer"], :where(.css-1fviqcj)[class*=" ant-drawer"] [class^="ant-drawer"], :where(.css-1fviqcj)[class^="ant-drawer"] [class*=" ant-drawer"], :where(.css-1fviqcj)[class*=" ant-drawer"] [class*=" ant-drawer"] {
+    box-sizing: border-box;
+} */
+
+.intel-drawerContent {
+    border-radius: 8px 0px 0px 8px;
+    text-align: left;
+}
+
+/* [class^="ant-drawer"], :where(.css-1fviqcj)[class*=" ant-drawer"] {
+    font-family: -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans',sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Noto Color Emoji';
+    font-size: 14px;
+    box-sizing: border-box;
+} */
