@@ -111,6 +111,7 @@ const Home: NextPage = () => {
   const [pdInfoArrived ,setPDinfoArrived] = useState(false);
   const [openAIResponse, setOpenAIResponse] = useState([]);
   const [pdInfos, setPdInfos] = useState({} as any);
+  const [promptResponse, setPromptResponse] = useState("");
 
   // const getInfo = api.info.fetch.useMutation({
   //   onMutate: () => {
@@ -183,7 +184,15 @@ const Home: NextPage = () => {
         setOpenAIResponse(event.data.answers)
         
         // alert('common answer arrived');
-      }      
+      } 
+      if(event.data.from === 'content' && event.data.type === 'answerArrived') {
+        // getInfo.data.openAIResponse = event.data.answers;
+        debugger
+
+        setPromptResponse(event.data.answer)
+        
+        // alert('common answer arrived');
+      }       
     });
 
   }, []);
@@ -238,6 +247,7 @@ const Home: NextPage = () => {
             ServerData={getInfo.data.chatResponse}
             GraphData={getInfo.data.txtResponse}
             ImproveData={openAIResponse as any}
+            PromptData={promptResponse as any}
             reSearch={(newAsin) => {
               // setAsin(newAsin);
               // getInfo.mutate({

@@ -62,7 +62,7 @@ export default function ProductBox(props: ProductBoxProps) {
     //   </div>
     // </div>
 
-    <div className="flex justify-center">
+    <div className={props.img != '' ? "flex justify-center" : "flex justify-center blur-md"}>
       <div className="box relative mt-[10px] mb-[10px] w-[506px] gap-4 rounded-lg bg-[#2B2939] p-4 pb-[vh] text-white">
         <div className="flex">
           <div className="flex w-[298px] gap-1">

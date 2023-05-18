@@ -20,6 +20,31 @@ import Spinner from "../Spinner";
 import ProductImproveItem from "./ProductImproveItem";
 
 
+const IconSend = () => {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 512 512"
+      className="h-5 w-5"
+    >
+      <path d="M498.1 5.6c10.1 7 15.4 19.1 13.5 31.2l-64 416c-1.5 9.7-7.4 18.2-16 23s-18.9 5.4-28 1.6L284 427.7l-68.5 74.1c-8.9 9.7-22.9 12.9-35.2 8.1S160 493.2 160 480V396.4c0-4 1.5-7.8 4.2-10.7L331.8 202.8c5.8-6.3 5.6-16-.4-22s-15.7-6.4-22-.7L106 360.8 17.7 316.6C7.1 311.3 .3 300.7 0 288.9s5.9-22.8 16.1-28.7l448-256c10.7-6.1 23.9-5.5 34 1.4z" />
+    </svg>
+  );
+};
+
+const IconLoadingSend = () => {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 512 512"
+      className="animate-spin h-5 w-5"
+    >
+      <path d="M304 48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zm0 416c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM48 304c26.5 0 48-21.5 48-48s-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48zm464-48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM142.9 437c18.7-18.7 18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zm0-294.2c18.7-18.7 18.7-49.1 0-67.9S93.7 56.2 75 75s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zM369.1 437c18.7 18.7 49.1 18.7 67.9 0s18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9z" />
+    </svg>
+  );
+};
+
+
 export interface ProductBoxProps {
   title: string;
   asin: string;
@@ -121,11 +146,14 @@ const ProductPage: React.FC<{
   ServerData: string;
   GraphData: string;
   ImproveData: [];
+  PromptData: string;
 
   reSearch?: (newAsin: string) => void;
-}> = ({ asin, ServerData, GraphData, ProductData, reSearch, ImproveData }) => {
+}> = ({ asin, ServerData, GraphData, ProductData, reSearch, ImproveData, PromptData }) => {
   const [props, setProps] = useState<ProductBoxProps>(productTemplateData());
   const [newAsin, setNewAsin] = useState<string>("");
+  const [promptResponse, setPromptResponse] = useState<string>("");
+  const [prompt, setPrompt] = useState<string>("");
   const pageRef = useRef(null);
   const router = useRouter();
   useEffect(() => {
@@ -142,10 +170,12 @@ const ProductPage: React.FC<{
       data.img = ProductData.img;
       data.link = `https://www.amazon.com/dp/${asin}`;
       setProps(data);
+
+      setPromptResponse(PromptData)
     } catch (error) {
       console.error(error);
     }
-  }, [ProductData, asin]);
+  }, [ProductData, asin, PromptData]);
 
   const { dataArray, dateArray, totalReviews, totalReviewsPercentages } =
     useMemo(() => {
@@ -318,6 +348,12 @@ const ProductPage: React.FC<{
     totalReviewsPercentages.positive,
   ]);
 
+  const handleSubmitPrompt = () => {
+    if(prompt == '' && promptResponse == "Waiting") return;
+
+    window.parent.postMessage({from:'nextjs', type:'prompt', prompt: prompt}, "*");
+    setPromptResponse("Waiting")
+  }
   // console.log("::: ", ImproveData);
   // alert(JSON.stringify({ImproveData}));
 
@@ -325,11 +361,12 @@ const ProductPage: React.FC<{
       <div className="w-full bg-[#1D1C27] mt-[50px] ml-[16px] mr-[16px]">
         <div ref={pageRef} id="pdf-content" className="bg-[#1D1C27] ml-[16px] mr-[16px]">
         {props ? <ProductBox {...props} /> : "Loading..."}
-        <div className="flex justify-center justify-between mt-4">
+        <div className="flex justify-center justify-between mt-4" >
           <div className="text-[24px] font-bold text-white">
             Analysis of customer reviews
           </div>
-          <a className="text-[#FFAF12] underline text-center">See full link</a>
+          {/* <a target="_blank" href="https://twitter.com/" rel="noopener noreferrer"></a> */}
+          <a target="_blank" rel="noreferrer" href={`https://reviews.geenie.ai/?asin=${props.asin}`} className="text-[#FFAF12] underline text-center">See full link</a>
         </div>
         <div className="flex justify-left mt-1">
           <div className="text-[20px] text-white mb-[5px]">
@@ -345,36 +382,58 @@ const ProductPage: React.FC<{
           <div className="text-[20px] text-white mb-[5px]">
           Product Improvements
           </div>
-          { ImproveData.length == 0 ? (<Spinner sm/>) : null }
+          {/* { ImproveData.length == 0 ? (<Spinner sm/>) : null } */}
         </div>
-        {ImproveData.map((data) => { return <><ProductImproveItem asin={asin} title={(data as any).title} question={(data as any).question} answer={(data as any).answer}/></> })}
+        <div>
+          {
+            ImproveData.length > 0 ? (ImproveData.map((data) => { return <><ProductImproveItem asin={asin} title={(data as any).title} question={(data as any).question} answer={(data as any).answer}/></> })) :
+            (
+              <>
+              <ProductImproveItem asin={asin} answer="" title="🌟Top Negative Keywords and Phrases" question=""/>
+              <ProductImproveItem asin={asin} answer="" title="🌟Top Positive Keywords and Phrases" question=""/>
+              <ProductImproveItem asin={asin} answer="" title="🌟Product Features Requests" question=""/>
+              <ProductImproveItem asin={asin} answer="" title="🌟New Variation Recommendations" question=""/>
+              <ProductImproveItem asin={asin} answer="" title="🌟Bundle opportunities" question=""/>
+              </>
+            )
+          }
+        </div>
         <div/>
-        {/* <ProductImproveItem asin={asin} title="🌟Top Negative Keywords and Phrases:" question="Please provide a 5-7 bullet-point list of the most frequently mentioned negative keywords and phrases in the customer reviews, indicating areas for improvement. Include relevant quotations or snippets from the reviews to illustrate each point. Additionally, include an estimated hit rate in percentage (no more than 60%) for each topic, representing how often it appears in the reviews."/>
-        <ProductImproveItem asin={asin} title="🌟Top Negative Keywords and Phrases:" question="Please provide a 5-7 bullet-point list of the most frequently mentioned negative keywords and phrases in the customer reviews, indicating areas for improvement. Include relevant quotations or snippets from the reviews to illustrate each point. Additionally, include an estimated hit rate in percentage (no more than 60%) for each topic, representing how often it appears in the reviews."/>
-        <ProductImproveItem asin={asin} title="🌟Top Negative Keywords and Phrases:" question="Please provide a 5-7 bullet-point list of the most frequently mentioned negative keywords and phrases in the customer reviews, indicating areas for improvement. Include relevant quotations or snippets from the reviews to illustrate each point. Additionally, include an estimated hit rate in percentage (no more than 60%) for each topic, representing how often it appears in the reviews."/>
-        <ProductImproveItem asin={asin} title="🌟Top Negative Keywords and Phrases:" question="Please provide a 5-7 bullet-point list of the most frequently mentioned negative keywords and phrases in the customer reviews, indicating areas for improvement. Include relevant quotations or snippets from the reviews to illustrate each point. Additionally, include an estimated hit rate in percentage (no more than 60%) for each topic, representing how often it appears in the reviews."/>
-        <ProductImproveItem asin={asin} title="🌟Top Negative Keywords and Phrases:" question="Please provide a 5-7 bullet-point list of the most frequently mentioned negative keywords and phrases in the customer reviews, indicating areas for improvement. Include relevant quotations or snippets from the reviews to illustrate each point. Additionally, include an estimated hit rate in percentage (no more than 60%) for each topic, representing how often it appears in the reviews."/>
-        <ProductImproveItem asin={asin} title="🌟Top Negative Keywords and Phrases:" question="Please provide a 5-7 bullet-point list of the most frequently mentioned negative keywords and phrases in the customer reviews, indicating areas for improvement. Include relevant quotations or snippets from the reviews to illustrate each point. Additionally, include an estimated hit rate in percentage (no more than 60%) for each topic, representing how often it appears in the reviews."/> */}
-
         <div className="flex justify-between mt-1">
           <div className="text-[20px] text-white mb-[5px]">
           Ask your own questions
           </div>
-          { ImproveData.length == 0 ? (<Spinner sm/>) : null }
         </div>
-        { ImproveData.length > 0 ? (
-          <div className="box mt-[1vw] rounded-lg bg-[#2B2939] p-4" onClick={()=> { window.parent.postMessage({from:'nextjs', type:'openChatAIView'}, "*")}}>
+        {/* { ImproveData.length > 0 ? ( */}
           <div className="m-auto flex">
             <div className="w-full">
-              <div className="mb-[6px] flex text-left">
-                <h2 className="text-[15px] text-white ">
-                What Would you like to know ?
-                </h2>
+              <div className="box mt-1 rounded-lg bg-[#2B2939] ">
+                <div className="flex justify-between text-left px-4 py-2 gap-1">
+                  <input
+                    type="text"
+                    placeholder="What would like you know?"
+                    onChange={(e) => setPrompt(e.target.value)}
+                    onKeyUp={(e) => {if (e.code === "Enter") { e.preventDefault(); handleSubmitPrompt(); }}}
+                    className="w-full p-1 bg-inherit border-inherit text-[15px] text-white focus:border-0"
+                  />
+                  {/* <Spinner sm /> */}
+                  <button className="fill-gray-300" onClick={() => { handleSubmitPrompt() }}>
+                      {promptResponse == "Waiting" ? <IconLoadingSend /> : null }
+                  </button>
+                </div>
+                { (promptResponse != "Waiting" && promptResponse != "" ) ?
+                (
+                    <p className="text-[13px] text-white px-4 pb-2">
+                        {/* {answer.replace(/\n/g, '<br>')} */}
+                        { promptResponse }
+                    </p>
+                ) : null
+                }                
               </div>
+              
             </div>
           </div>
-        </div>
-        ) : null }
+        {/* ) : null } */}
       {/* <div className="flex text-white">
         <h2
           className="float-left ml-12 pt-8 text-[21px] font-semibold text-white"

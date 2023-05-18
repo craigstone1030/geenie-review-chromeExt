@@ -23,7 +23,7 @@ interface ProductImproveItemProps {
     answer,
   }: ProductImproveItemProps) => {
     
-    const [answerShown, setAnswerShown] = useState<boolean>(false);
+    const [answerShown, setAnswerShown] = useState<boolean>(true);
 
     // useEffect(() => {
     //     try {

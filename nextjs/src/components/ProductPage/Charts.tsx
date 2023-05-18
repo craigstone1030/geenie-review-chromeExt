@@ -297,9 +297,9 @@ const ChartsPage = ({
     );
   
   return (
-    <div className="box mt-[1vw] rounded-lg bg-[#2B2939] p-4">
+    <div className="box mt-[1vw] rounded-lg bg-[#2B2939] p-4 blur-md">
       {/* <div className="mt-6 mb-10 ml-14 flex"></div> */} 
-      <div className="m-auto flex">
+      <div className="m-auto flex-col">
         <div className="w-full">
           <div className="mb-[6px] flex text-left">
             <h2 className="text-[15px] text-white ">
@@ -321,42 +321,42 @@ const ChartsPage = ({
           </div>
 
         </div>
-        {/* <span className="w-[4vw]" />
-        <div className="w-[25.5vw] " id="sameHeight">
-          <div className=" mb-[13px] flex text-left">
-            <h2 className="text-[18px] font-semibold text-white ">
+        <span className="h-[4vw]" />
+        <div className="w-full ">
+          <div className=" mb-[6px] flex text-left">
+            <h2 className="text-[15px] text-white ">
               {" "}
               Distribution of sentiments
             </h2>
-            <button className="ml-6 items-end rounded-[8px] bg-amber-400 px-3 py-1 text-[15px]  font-medium text-white">
+            {/* <button className="ml-6 items-end rounded-[8px] bg-amber-400 px-3 py-1 text-[15px]  font-medium text-white">
               {" "}
               Free{" "}
-            </button>
+            </button> */}
           </div>
           <PieChart
-            className="h-[350px] w-[28vw] rounded-xl"
+            className="h-[200px] w-[473px] rounded-xl"
             data={[
               totalReviewsPercentages.positive,
               totalReviewsPercentages.neutral,
               totalReviewsPercentages.negative,
             ]}
           />
-        </div> */}
+        </div>
         {/* </div> */}
-        {/* <span className="w-[4vw]" />
-        <div className="h-[350px] w-[28vw]">
-          <div className=" mb-[13px] flex text-left">
-            <h2 className="text-[18px] font-semibold text-white ">
+        <span className="h-[4vw]" />
+        <div className="w-full">
+          <div className=" mb-[6px] flex text-left">
+            <h2 className="text-[15px] font-semibold text-white ">
               {" "}
               Sentiment by months
             </h2>
-            <button className="ml-6 items-end rounded-[8px] bg-amber-400 px-3 py-1 text-[15px]  font-medium text-white">
+            {/* <button className="ml-6 items-end rounded-[8px] bg-amber-400 px-3 py-1 text-[15px]  font-medium text-white">
               {" "}
               Free{" "}
-            </button>
+            </button> */}
           </div>
           <AnalysisByMonth {...analysisByMonthProps} />
-        </div> */}
+        </div>
       </div>
 
       {/* <div className='flex items-center justify-center mt-6 md:mb-10'>

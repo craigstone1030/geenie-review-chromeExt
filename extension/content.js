@@ -82,9 +82,9 @@ const initContent = (newAsin) => {
     });
 
     // drawerContentIframe.src = "https://geenieai.com/";
-    drawerContentIframe.src = "https://54.85.82.33/";
+    // drawerContentIframe.src = "https://54.85.82.33/";
     // drawerContentIframe.src = "http://52.201.118.164:3000/";
-    // drawerContentIframe.src = "http://localhost:3000/";
+    drawerContentIframe.src = "http://localhost:3000/";
     drawerContentIframe.frameBorder = 0;
     drawerContentIframe.style.display = 'block';
 
@@ -125,7 +125,12 @@ const initContent = (newAsin) => {
             chrome.runtime.sendMessage({ from: 'openai', type:'prompt', input: event.data.input }, response => {
                 chatAIIframe.contentWindow.postMessage({from:'content', type:'answerArrived', answer: response.answer}, "*")
             });
-        }        
+        }   
+        if(event.data.from === 'nextjs' && event.data.type === 'prompt') {
+            chrome.runtime.sendMessage({ from: 'nextjs', type:'prompt', input: {url: this.window.location.href, cookie: '', asin: asin, prompt: event.data.prompt} }, response => {
+                drawerContentIframe.contentWindow.postMessage({from:'content', type:'answerArrived', answer: response.answer}, "*")
+            });
+        }             
     });
     // message from background
     // chrome.runtime.onMessage.addListener(function (request) {
