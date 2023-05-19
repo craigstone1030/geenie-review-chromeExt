@@ -109,9 +109,17 @@ const Home: NextPage = () => {
   const [opened, setOpened] = useState(true);
   const [isLoading ,setLoading] = useState(true);
   const [pdInfoArrived ,setPDinfoArrived] = useState(false);
-  const [openAIResponse, setOpenAIResponse] = useState([]);
   const [pdInfos, setPdInfos] = useState({} as any);
   const [promptResponse, setPromptResponse] = useState("");
+  const [stateChange, setStateChange] = useState("");
+
+  let initialData = [{ title: '🌟Top Negative Keywords and Phrases', question:'Please provide a 5-7 bullet-point list of the most frequently mentioned negative keywords and phrases in the customer reviews, indicating areas for improvement. Include relevant quotations or snippets from the reviews to illustrate each point. Additionally, include an estimated hit rate in percentage (no more than 60%) for each topic, representing how often it appears in the reviews.', answer: ''},
+  { title: '🌟Top Positive Keywords and Phrases', question:'Please provide a 5 bullet-point list of the most frequently mentioned positive keywords and phrases in the customer reviews, indicating areas for improvement. Include relevant quotations or snippets from the reviews to illustrate each point. Additionally, provide an estimated hit rate in percentage (no more than 60%) for each topic, representing how often it appears in the reviews.', answer: ''},
+  { title: '🌟Product Features Requests:', question:'Analyze the customer reviews to identify 4 to 8 product features that could be improved, starting with the most requested feature. For each feature, provide a practical suggestion on how to improve the product.', answer: ''},
+  { title: '🌟New Variation Recommendations:', question:'Analyze the customer reviews and identify product variation suggestions, such as additional colors, sizes, or flavors, that customers mention. Please provide a bullet-point list of the new variation ideas.', answer: ''},
+  { title: '🌟Bundle opportunities:',     question:"Analyze the customer reviews and examine research on the consumer decision-making process within the product's niche, providing a brief overview of the stages customers go through before making a purchase and any unique aspects related to this product category.", answer: ''}]
+
+  const [openAIResponse, setOpenAIResponse] = useState([]);
 
   // const getInfo = api.info.fetch.useMutation({
   //   onMutate: () => {
@@ -152,6 +160,8 @@ const Home: NextPage = () => {
     // pdInfoArrived: false
   }
 
+  
+
   useEffect(() => {
     window.parent.postMessage({from:'nextjs', type:'ping'}, "*")
 
@@ -172,17 +182,27 @@ const Home: NextPage = () => {
         setLoading(false)
         setPDinfoArrived(true)
         
+        initialData.forEach(item => {
+          window.parent.postMessage({from:'nextjs', type:'getInitialAnswer', question: item.question}, "*");
+        })
+
         // alert('product information arrived');
         // alert(JSON.stringify(event.data.pdInfos))
-
-        window.parent.postMessage({from:'nextjs', type:'getInitialAnswer'}, "*")
       }
       if(event.data.from === 'content' && event.data.type === 'initialAnswerArrived') {
         // getInfo.data.openAIResponse = event.data.answers;
-        debugger
 
-        setOpenAIResponse(event.data.answers)
-        
+        // setOpenAIResponse(event.data.answers)
+        let item = initialData.find(item => { return (item as any).question == event.data.question });
+        // if( item ) {
+        (item as any).answer = event.data.answer;
+        // }
+
+        setOpenAIResponse(initialData as any)
+        setStateChange(event.data.question)
+        // console.log(stateChange)        
+        // alert(stateChange)
+
         // alert('common answer arrived');
       } 
       if(event.data.from === 'content' && event.data.type === 'answerArrived') {
@@ -194,6 +214,8 @@ const Home: NextPage = () => {
         // alert('common answer arrived');
       }       
     });
+
+    setOpenAIResponse(initialData as any)
 
   }, []);
 
@@ -217,6 +239,8 @@ const Home: NextPage = () => {
   // }, [asin, browserUrl]);
 
   // alert(JSON.stringify(getInfo.data.openAIResponse))
+  
+  // setOpenAIResponse(data as any)
 
   return (
     <>

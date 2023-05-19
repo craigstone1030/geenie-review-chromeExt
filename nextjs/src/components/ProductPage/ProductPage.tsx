@@ -387,15 +387,16 @@ const ProductPage: React.FC<{
         <div>
           {
             ImproveData.length > 0 ? (ImproveData.map((data) => { return <><ProductImproveItem asin={asin} title={(data as any).title} question={(data as any).question} answer={(data as any).answer}/></> })) :
-            (
-              <>
-              <ProductImproveItem asin={asin} answer="" title="🌟Top Negative Keywords and Phrases" question=""/>
-              <ProductImproveItem asin={asin} answer="" title="🌟Top Positive Keywords and Phrases" question=""/>
-              <ProductImproveItem asin={asin} answer="" title="🌟Product Features Requests" question=""/>
-              <ProductImproveItem asin={asin} answer="" title="🌟New Variation Recommendations" question=""/>
-              <ProductImproveItem asin={asin} answer="" title="🌟Bundle opportunities" question=""/>
-              </>
-            )
+            // (
+            //   <>
+            //   <ProductImproveItem asin={asin} answer="" title="🌟Top Negative Keywords and Phrases" question=""/>
+            //   <ProductImproveItem asin={asin} answer="" title="🌟Top Positive Keywords and Phrases" question=""/>
+            //   <ProductImproveItem asin={asin} answer="" title="🌟Product Features Requests" question=""/>
+            //   <ProductImproveItem asin={asin} answer="" title="🌟New Variation Recommendations" question=""/>
+            //   <ProductImproveItem asin={asin} answer="" title="🌟Bundle opportunities" question=""/>
+            //   </>
+            // )
+            null
           }
         </div>
         <div/>

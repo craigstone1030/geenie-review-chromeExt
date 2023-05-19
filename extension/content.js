@@ -110,8 +110,9 @@ const initContent = (newAsin) => {
         }
         if(event.data.from === 'nextjs' && event.data.type === 'getInitialAnswer') {
             // chrome.runtime.sendMessage({ from: 'nextjs', tabId: tabId,  type:'getProductInfo', input: {url: this.window.location.href, cookie: '', asin: asin} });
-            chrome.runtime.sendMessage({ from: 'nextjs', type:'getInitialAnswer', input: {url: this.window.location.href, cookie: '', asin: asin} }, response => {
-                drawerContentIframe.contentWindow.postMessage({from:'content', type:'initialAnswerArrived', answers: response.answers}, "*")
+            console.log("request question:" + question)
+            chrome.runtime.sendMessage({ from: 'nextjs', type:'getInitialAnswer', input: {url: this.window.location.href, cookie: '', asin: asin, question: event.data.question} }, response => {
+                drawerContentIframe.contentWindow.postMessage({from:'content', type:'initialAnswerArrived', question: response.data.question, answer: response.data.answer}, "*")
             });
         }        
         if(event.data.from === 'openai' && event.data.type === 'ping') {

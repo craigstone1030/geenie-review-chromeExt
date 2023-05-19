@@ -65,14 +65,17 @@ async function handleMessage(request, senderResponse) {
       formData.append('cookie', request.input.cookie);
       formData.append('asin', request.input.asin);
       formData.append('prompt', 'Initial Question');
+      formData.append('question', request.input.question);
 
       try {
+        debugger
         let response = await fetch(`${host}/api/chat/ext`,
             { 
               method: "POST", 
               body: formData
             })
   
+          debugger
         // check if the API response is ok Else throw an error
         if (!response.ok) {
             throw new Error(`Failed to fetch. Status code: ${response.status}`);
@@ -84,10 +87,10 @@ async function handleMessage(request, senderResponse) {
         // check if the API response contains an answer
         if (data && data.response) {
             // get the answer from the API response
-            let response = data.response;
+            let response = data.response
 
             // chrome.tabs.sendMessage(request.tabId, { from: 'background', type:'answerArrived', answer: response });
-            senderResponse({ from: 'background', type:'initialAnswerArrived', answers: JSON.parse(response) });
+            senderResponse({ from: 'background', type:'initialAnswerArrived', data: response });
         }
   
       } catch (error) {

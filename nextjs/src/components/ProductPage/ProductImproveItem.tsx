@@ -48,6 +48,10 @@ interface ProductImproveItemProps {
     //     }
     //   }, [asin]);  
 
+    // useEffect(() => {
+    //   window.parent.postMessage({from:'nextjs', type:'getInitialAnswer', question: question}, "*")
+    // }, [question]);
+
     return (
         <div className="box mt-[1vw] rounded-lg bg-[#2B2939] p-4">
           <div className="m-auto flex">
