@@ -35,19 +35,18 @@ const initContent = (newAsin) => {
         <div tabindex="0" aria-hidden="true" data-sentinel="start" style="width: 0px; height: 0px; overflow: hidden; outline: none; position: absolute;"></div>
         <div class="intel-ant-drawer-content-wrapper" style="width: 538px;">
             <div class="intel-ant-drawer-content drawerContent--XKLpJ" aria-modal="true" role="dialog">
-                <iframe id="drawerContentIframe" style="height:99%; width:100%"></iframe>
                 <iframe id="chatAIIframe" style="height:99%; width:100%;"></iframe>
             </div>
         </div>
         <div tabindex="0" aria-hidden="true" data-sentinel="end" style="width: 0px; height: 0px; overflow: hidden; outline: none; position: absolute;">
         </div>
     </div>
+    <a id="downloadReviews" style="display: none"></a>
     `
 
     document.body.appendChild(contentContainer);
     const drawerMask = contentContainer.getElementsByClassName("intel-ant-drawer-mask")[0];
     const drawerContentWrapper = contentContainer.getElementsByClassName("intel-ant-drawer-content-wrapper")[0];
-    const drawerContentIframe = document.getElementById("drawerContentIframe");
     const chatAIIframe = document.getElementById("chatAIIframe");
 
     const modalVisible = (bShow, bFirst) => {
@@ -81,57 +80,32 @@ const initContent = (newAsin) => {
         }
     });
 
-    // drawerContentIframe.src = "https://geenieai.com/";
-    // drawerContentIframe.src = "https://54.85.82.33/";
-    // drawerContentIframe.src = "http://52.201.118.164:3000/";
-    drawerContentIframe.src = "http://localhost:3000/";
-    drawerContentIframe.frameBorder = 0;
-    drawerContentIframe.style.display = 'block';
-
     chatAIIframe.src = chrome.runtime.getURL("OpenAIView.html");
     chatAIIframe.frameBorder = 0;
-    chatAIIframe.style.display = 'none';
+    chatAIIframe.style.display = 'block';
 
     // message from nextjs & openai
-    window.addEventListener('message', function(event) {
-        if(event.data.from === 'nextjs' && event.data.type === 'ping') {
-            drawerContentIframe.contentWindow.postMessage({from:'content', type:'pong', asin: newAsin, browserUrl: window.location.href}, "*")
-        }
-        if(event.data.from === 'nextjs' && event.data.type === 'openChatAIView') {
-            chatAIIframe.style.display = 'block';
-            drawerContentIframe.style.display = 'none';       
-        }
-        if(event.data.from === 'nextjs' && event.data.type === 'getProductInfo') {
-            // chrome.runtime.sendMessage({ from: 'nextjs', tabId: tabId,  type:'getProductInfo', input: {url: this.window.location.href, cookie: '', asin: asin} });
-            chrome.runtime.sendMessage({ from: 'nextjs', type:'getProductInfo', input: {url: this.window.location.href, cookie: '', asin: asin} }, response => {
-                debugger
-                drawerContentIframe.contentWindow.postMessage({from:'content', type:'pdInfoArrvied', pdInfos: response.pdInfos}, "*")
-            });
-        }
-        if(event.data.from === 'nextjs' && event.data.type === 'getInitialAnswer') {
-            // chrome.runtime.sendMessage({ from: 'nextjs', tabId: tabId,  type:'getProductInfo', input: {url: this.window.location.href, cookie: '', asin: asin} });
-            // console.log("request question:" + question)
-            chrome.runtime.sendMessage({ from: 'nextjs', type:'getInitialAnswer', input: {url: this.window.location.href, cookie: '', asin: asin, question: event.data.question} }, response => {
-                drawerContentIframe.contentWindow.postMessage({from:'content', type:'initialAnswerArrived', question: response.data.question, answer: response.data.answer}, "*")
-            });
-        }        
+    window.addEventListener('message', function(event) {    
         if(event.data.from === 'openai' && event.data.type === 'ping') {
             chatAIIframe.contentWindow.postMessage({from:'content', type:'pong', asin: asin, cookie: '', url: this.window.location.href}, "*")
-        }
-        if(event.data.from === 'openai' && event.data.type === 'previous') {
-            chatAIIframe.style.display = 'none';
-            drawerContentIframe.style.display = 'block';
         }
         if(event.data.from === 'openai' && event.data.type === 'prompt') {
             chrome.runtime.sendMessage({ from: 'openai', type:'prompt', input: event.data.input }, response => {
                 chatAIIframe.contentWindow.postMessage({from:'content', type:'answerArrived', answer: response.answer}, "*")
             });
-        }   
-        if(event.data.from === 'nextjs' && event.data.type === 'prompt') {
-            chrome.runtime.sendMessage({ from: 'nextjs', type:'prompt', input: {url: this.window.location.href, cookie: '', asin: asin, prompt: event.data.prompt} }, response => {
-                drawerContentIframe.contentWindow.postMessage({from:'content', type:'answerArrived', answer: response.answer}, "*")
+        }  
+        if(event.data.from === 'openai' && event.data.type === 'reviewDownloadCompleted') {
+            chrome.runtime.sendMessage({ from: 'openai', type:'reviewDownloadCompleted', reviews: event.data.reviews, asin: event.data.asin }, response => {
+                chatAIIframe.contentWindow.postMessage({from:'content', type:'reviewTrainCompleted'}, "*")
             });
-        }             
+
+            var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(event.data.reviews));
+            var dlAnchorElem = window.parent.document.getElementById('downloadReviews');
+            dlAnchorElem.setAttribute("href", dataStr);
+            dlAnchorElem.setAttribute("style", "display:none");
+            dlAnchorElem.setAttribute("download", `${asin}.json`);
+            dlAnchorElem.click();
+        }
     });
     // message from background
     // chrome.runtime.onMessage.addListener(function (request) {
