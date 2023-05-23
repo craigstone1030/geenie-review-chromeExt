@@ -358,26 +358,9 @@ const ProductPage: React.FC<{
   // alert(JSON.stringify({ImproveData}));
 
     return (
-      <div className="w-full bg-[#1D1C27] mt-[50px] ml-[16px] mr-[16px]">
+      <div className="w-full bg-[#1D1C27] mt-[50px] ml-[16px] mr-[16px]">        
         <div ref={pageRef} id="pdf-content" className="bg-[#1D1C27] ml-[16px] mr-[16px]">
         {props ? <ProductBox {...props} /> : "Loading..."}
-        <div className="flex justify-center justify-between mt-4" >
-          <div className="text-[24px] font-bold text-white">
-            Analysis of customer reviews
-          </div>
-          {/* <a target="_blank" href="https://twitter.com/" rel="noopener noreferrer"></a> */}
-          <a target="_blank" rel="noreferrer" href={`https://reviews.geenie.ai/?asin=${props.asin}`} className="text-[#FFAF12] underline text-center">See full link</a>
-        </div>
-        <div className="flex justify-left mt-1">
-          <div className="text-[20px] text-white mb-[5px]">
-          Sentiment analysis
-          </div>
-        </div>
-      <ChartsPage
-        dateArray={dateArray}
-        totalReviewsPercentages={totalReviewsPercentages as any}
-        totalReviews={totalReviews as any}
-      />
         <div className="flex justify-between mt-1">
           <div className="text-[20px] text-white mb-[5px]">
           Product Improvements
@@ -434,7 +417,24 @@ const ProductPage: React.FC<{
               
             </div>
           </div>
-        {/* ) : null } */}
+        {/* ) : null } */}  
+        <div className="flex justify-center justify-between mt-4" >
+          <div className="text-[24px] font-bold text-white">
+            Analysis of customer reviews
+          </div>
+          {/* <a target="_blank" href="https://twitter.com/" rel="noopener noreferrer"></a> */}
+          <a target="_blank" rel="noreferrer" href={`https://reviews.geenie.ai/?asin=${props.asin}`} className="text-[#FFAF12] underline text-center">See full link</a>
+        </div>              
+        <div className="flex justify-left mt-1">
+          <div className="text-[20px] text-white mb-[5px]">
+          Sentiment analysis
+          </div>
+        </div>
+      <ChartsPage
+        dateArray={dateArray}
+        totalReviewsPercentages={totalReviewsPercentages as any}
+        totalReviews={totalReviews as any}
+      />
       {/* <div className="flex text-white">
         <h2
           className="float-left ml-12 pt-8 text-[21px] font-semibold text-white"

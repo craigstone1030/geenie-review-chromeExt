@@ -17,6 +17,9 @@ import { useRouter } from "next/router";
 import { SearchVersion } from "@prisma/client";
 import axios from "axios";
 import { List } from "postcss/lib/list";
+import parse from "node-html-parser";
+import { integrations_v1alpha } from "googleapis";
+import { Text } from "@react-pdf/renderer";
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const session = await getServerAuthSession(ctx);
@@ -113,7 +116,7 @@ const Home: NextPage = () => {
   const [promptResponse, setPromptResponse] = useState("");
   const [stateChange, setStateChange] = useState("");
 
-  let initialData = [{ title: '🌟Top Negative Keywords and Phrases', question:'Please provide a 5-7 bullet-point list of the most frequently mentioned negative keywords and phrases in the customer reviews, indicating areas for improvement. Include relevant quotations or snippets from the reviews to illustrate each point. Additionally, include an estimated hit rate in percentage (no more than 60%) for each topic, representing how often it appears in the reviews.', answer: ''},
+  const initialData = [{ title: '🌟Top Negative Keywords and Phrases', question:'Please provide a 5-7 bullet-point list of the most frequently mentioned negative keywords and phrases in the customer reviews, indicating areas for improvement. Include relevant quotations or snippets from the reviews to illustrate each point. Additionally, include an estimated hit rate in percentage (no more than 60%) for each topic, representing how often it appears in the reviews.', answer: ''},
   { title: '🌟Top Positive Keywords and Phrases', question:'Please provide a 5 bullet-point list of the most frequently mentioned positive keywords and phrases in the customer reviews, indicating areas for improvement. Include relevant quotations or snippets from the reviews to illustrate each point. Additionally, provide an estimated hit rate in percentage (no more than 60%) for each topic, representing how often it appears in the reviews.', answer: ''},
   { title: '🌟Product Features Requests:', question:'Analyze the customer reviews to identify 4 to 8 product features that could be improved, starting with the most requested feature. For each feature, provide a practical suggestion on how to improve the product.', answer: ''},
   { title: '🌟New Variation Recommendations:', question:'Analyze the customer reviews and identify product variation suggestions, such as additional colors, sizes, or flavors, that customers mention. Please provide a bullet-point list of the new variation ideas.', answer: ''},
@@ -160,8 +163,6 @@ const Home: NextPage = () => {
     // pdInfoArrived: false
   }
 
-  
-
   useEffect(() => {
     window.parent.postMessage({from:'nextjs', type:'ping'}, "*")
 
@@ -193,7 +194,7 @@ const Home: NextPage = () => {
         // getInfo.data.openAIResponse = event.data.answers;
 
         // setOpenAIResponse(event.data.answers)
-        let item = initialData.find(item => { return (item as any).question == event.data.question });
+        const item = initialData.find(item => { return (item as any).question == event.data.question });
         // if( item ) {
         (item as any).answer = event.data.answer;
         // }
@@ -213,6 +214,9 @@ const Home: NextPage = () => {
         
         // alert('common answer arrived');
       }       
+      if(event.data.from === 'content' && event.data.type === 'reviewTrainCompleted') {
+        
+      }
     });
 
     setOpenAIResponse(initialData as any)

@@ -135,4 +135,67 @@ async function handleMessage(request, senderResponse) {
           senderResponse({ from: 'background', type:'answerArrived', answer: 'Server side went wrong, make sure to confirm the reviews.'});
         }    
     }
+    if (request.type === 'reviewDownloadCompleted' && request.reviews) {
+      var formData = new FormData();
+      formData.append('reviews', JSON.stringify(request.reviews));
+      formData.append('asin', request.asin);
+      try {
+        let response = await fetch(`${host}/api/upload/reviews`,
+        { 
+          method: "POST",
+          body: formData
+        })
+  
+        // check if the API response is ok Else throw an error
+        if (!response.ok) {
+            throw new Error(`Failed to fetch. Status code: ${response.status}`);
+        }
+
+        // get the data from the API response as json
+        let data = await response.json();
+
+        // check if the API response contains an answer
+        if (data && data.status) {
+            // get the answer from the API response
+            let status = data.status;
+            // chrome.tabs.sendMessage(request.tabId, { from: 'background', type:'answerArrived', answer: response });
+            senderResponse({ from: 'background', type:'reviewTrainCompleted', status: status });
+        }
+  
+      } catch (error) {
+        // chrome.tabs.sendMessage(request.tabId, { from: 'background', type:'answerArrived', answer: 'Server side went wrong, make sure to confirm the reviews.'});
+        senderResponse({ from: 'background', type:'reviewTrainCompleted', status: false});
+      }  
+    }
+    if (request.type === 'reviewDownloadAvailable' && request.asin)  {
+      var formData = new FormData();
+      formData.append('asin', request.asin);
+      try {
+        let response = await fetch(`${host}/api/upload/available`,
+        { 
+          method: "POST",
+          body: formData
+        })
+  
+        // check if the API response is ok Else throw an error
+        if (!response.ok) {
+            throw new Error(`Failed to fetch. Status code: ${response.status}`);
+        }
+
+        // get the data from the API response as json
+        let data = await response.json();
+
+        // check if the API response contains an answer
+        if (data) {
+            // get the answer from the API response
+            let status = data.status;
+            // chrome.tabs.sendMessage(request.tabId, { from: 'background', type:'answerArrived', answer: response });
+            senderResponse({ from: 'background', type:'reviewDownloadAvailable', status: status });
+        }
+  
+      } catch (error) {
+        // chrome.tabs.sendMessage(request.tabId, { from: 'background', type:'answerArrived', answer: 'Server side went wrong, make sure to confirm the reviews.'});
+        senderResponse({ from: 'background', type:'reviewDownloadAvailable', status: false});
+      }       
+    }
   }
