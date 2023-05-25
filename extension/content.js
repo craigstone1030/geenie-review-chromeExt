@@ -41,7 +41,9 @@ const initContent = (newAsin) => {
                 <iframe id="chatAIIframe" style="height:99%; width:100%; display: none"></iframe>
 
                 <div id="loaderContainer">
-                    <div id="loader"></div>
+                    <div class="progress">
+                        <div class="bar"></div>
+                    </div>
                     <div id="loadStatus"></div>
                 </div>                
             </div>
@@ -145,7 +147,9 @@ const initContent = (newAsin) => {
     chrome.runtime.sendMessage({ from: 'nextjs', type:'reviewDownloadAvailable', asin: asin }, response => {
         if ( response.status ) {
             loaderContainer.style.display = 'flex';
-            downloadReviews(asin, loaderContainer, loadStatus, drawerContentIframe, chatAIIframe);
+            document.querySelector(".progress").style.width = '350px';
+            document.querySelector(".progress").style.background = 'transparent';
+            downloadReviews(asin, loaderContainer, document.querySelector(".bar"), loadStatus, drawerContentIframe, chatAIIframe);
         } else {
             // drawerContentIframe.src = "https://geenieai.com/";
             drawerContentIframe.src = "https://54.85.82.33/";
@@ -163,7 +167,7 @@ const initContent = (newAsin) => {
     });
 }
 
-const downloadReviews = async (asin, loaderContainer, downloadStatusText, drawerContentIframe, chatAIIframe) => {
+const downloadReviews = async (asin, loaderContainer, bar, downloadStatusText, drawerContentIframe, chatAIIframe) => {
     let page = 1;
     const url = `https://www.amazon.com/product-reviews/${asin}/ref=cm_cr_getr_d_paging_btm_next_3?ie=UTF8&reviewerType=all_reviews&sortBy=recent&pageNumber${page}&pageNumber=${page}`;
 
@@ -223,7 +227,8 @@ const downloadReviews = async (asin, loaderContainer, downloadStatusText, drawer
           debugger
         });
 
-        downloadStatusText.innerText = `${totalReviews.length} / ${reviewsCount}`
+        downloadStatusText.innerHTML = `Downloading reviews ${totalReviews.length} / ${reviewsCount}`
+        bar.style.setProperty("--progress", `${totalReviews.length / reviewsCount * 100}%`);
       }
 
       // loader.style.display = 'none';
