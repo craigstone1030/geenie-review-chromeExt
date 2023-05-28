@@ -1,5 +1,7 @@
 var asin, tabId;
 
+
+const NEXTJS_FRONTEND_URL = "https://54.85.82.33/";
 // alert('content.js loaded')
 
 // chrome.runtime.sendMessage({ type: "getCurrentTabId"});
@@ -152,7 +154,7 @@ const initContent = (newAsin) => {
             downloadReviews(asin, loaderContainer, document.querySelector(".bar"), loadStatus, drawerContentIframe, chatAIIframe);
         } else {
             // drawerContentIframe.src = "https://geenieai.com/";
-            drawerContentIframe.src = "https://54.85.82.33/";
+            drawerContentIframe.src = NEXTJS_FRONTEND_URL;
             // drawerContentIframe.src = "http://52.201.118.164:3000/";            
             // drawerContentIframe.src = "http://localhost:3000/";
             drawerContentIframe.frameBorder = 0;
@@ -160,9 +162,9 @@ const initContent = (newAsin) => {
         
             chatAIIframe.src = chrome.runtime.getURL("OpenAIView.html");
             chatAIIframe.frameBorder = 0;
-            chatAIIframe.style.display = 'none'; 
+            chatAIIframe.style.display = 'none';
     
-            loaderContainer.style.display = 'none';                 
+            loaderContainer.style.display = 'none';            
         }
     });
 }
@@ -237,7 +239,7 @@ const downloadReviews = async (asin, loaderContainer, bar, downloadStatusText, d
     
       // alert(totalReviews.length)
       chrome.runtime.sendMessage({ from: 'nextjs', type:'reviewDownloadCompleted', reviews: totalReviews, asin: asin }, response => {
-        drawerContentIframe.src = "http://localhost:3000/";
+        drawerContentIframe.src = NEXTJS_FRONTEND_URL;
         drawerContentIframe.frameBorder = 0;
         drawerContentIframe.style.display = 'block';
     
